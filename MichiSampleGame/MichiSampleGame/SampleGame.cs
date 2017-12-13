@@ -15,13 +15,13 @@ namespace MichiSampleGame
     internal class SampleGame : Game
     {
         private Box box;
-        private Button button;
-        InputState iS;
+        private Box innerBox;
+        private Button myButton;
+        MyCheckbox cBox;
 
         [BackgroundDependencyLoader]
         private void load()
         {
-            iS = new InputState();
             Children = new Drawable[]
             {
                 new CursorContainer(),
@@ -31,6 +31,24 @@ namespace MichiSampleGame
                     Origin = Anchor.Centre,
                     Size = new Vector2(150, 150),
                     Colour = Color4.Tomato
+                },
+                myButton = new Button
+                {
+                    Text = @"Button",
+                    RelativeSizeAxes = Axes.Both,
+                    Size = new Vector2(0.1f),
+                    Anchor = Anchor.TopRight,
+                    Origin = Anchor.TopRight,
+                    BackgroundColour = Color4.Red,
+                    Alpha = 1,
+                    Action = TurnButton
+                },
+                innerBox = new Box
+                {
+                    Anchor = Anchor.Centre,
+                    Origin = Anchor.Centre,
+                    Size = new Vector2(30, 30),
+                    Colour = Color4.WhiteSmoke
                 },
                 new FillFlowContainer
                 {
@@ -42,22 +60,29 @@ namespace MichiSampleGame
                     AutoSizeAxes = Axes.Both,
                     Children = new Drawable[]
                     {
-                        new MyCheckbox(button)
+                        cBox = new MyCheckbox(innerBox)
                         {
                             LabelText = @"MyCheckbox",
                         }
                     }
                 }
             };
-
-            button.Enabled.Value = true;
+            
         }
 
         protected override void Update()
         {
 
             base.Update();
-            box.Rotation += (float)Time.Elapsed / 10;
+            box.Rotation += (float)Time.Elapsed / 20;
+            if (cBox.Value)
+            {
+                box.Colour = Color4.Blue;
+            }
+            else
+            {
+                box.Colour = Color4.Tomato;
+            }
         }
 
         public override void SetHost(GameHost host)
@@ -69,10 +94,16 @@ namespace MichiSampleGame
 
         public class MyCheckbox : BasicCheckbox
         {
-            public MyCheckbox(Button box)
+            public bool Value;
+            public MyCheckbox(Box box)
             {
-                Current.ValueChanged += v => box.Rotation += 10;
+                Current.ValueChanged += v => Value = v;
             }
+        }
+
+        public void TurnButton()
+        {
+            myButton.Rotation += 10;
         }
 
     }
